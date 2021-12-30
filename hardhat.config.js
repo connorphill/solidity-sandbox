@@ -16,6 +16,12 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
+/**
+ * @path set to /src folder where front-end will live in order to have easy access to connecting to front-end.
+ */
 module.exports = {
   solidity: "0.8.4",
+  paths: {
+    artifacts: './src/artifacts'
+  }
 };
