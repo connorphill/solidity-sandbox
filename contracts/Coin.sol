@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 
 contract Coin {
-    address public minter;
+    address public minter; // Person who minted tokens
     mapping (address => uint) public balances;
 
     event Sent(address from, address to, uint amount);
