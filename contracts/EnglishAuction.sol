@@ -1,15 +1,17 @@
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.0;
+
+import "hardhat/console.sol";
 
 interface IERC721 {
     function safeTransferFrom(
-        address from,
-        address to,
+        address from, // This is an NFT address from the ERC721 contract
+        address to, // This is a wallet address
         uint tokenId
     ) external;
 
     function transferFrom(
-        address,
-        address,
+        address, // This is an NFT address from the ERC721 contract
+        address, // This is a wallet address
         uint
     ) external;
 
@@ -18,6 +20,7 @@ interface IERC721 {
 contract EnglishAuction {
     IERC721 public nft;
     uint public nftId;
+    string public name;
 
     bool public started;
     bool public ended;
@@ -40,13 +43,30 @@ contract EnglishAuction {
     }
 
     
-    function start() external {
+    function setValue(string memory _name) public returns (string memory){
+        name = _name;
+        return name;
+    }
+
+    function getValue() public view returns (string memory) {
+        return name;
+    }
+
+    
+    function start() public {
+        console.log(msg.sender);
+        console.log(address(this));
+
         require(!started, "auction started");
         require(msg.sender == seller, "not seller");
 
-        nft.transferFrom(msg.sender, address(this), nftId);
-        started = true;
-        endAt = block.timestamp + 7 days;
+        // msg.sender = The address making a call to the contract
+        // address(this) = The contract address.
+        // nftId = Id of the NFT
+
+        nft.transferFrom(msg.sender, address(this), nftId); 
+        // started = true;
+        // endAt = block.timestamp + 7 days;
 
         emit Start();
     }
