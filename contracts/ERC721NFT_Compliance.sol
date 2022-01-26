@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 
-contract ERC721NFT_Security {
+contract ERC721NFT_Compliance {
     function mintCheck (
         uint256 _tokenIds,
         uint256 _maxSupply,

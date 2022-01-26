@@ -7,12 +7,13 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-import "./ERC721NFT_Security.sol";
+import "./ERC721NFT_Compliance.sol";
 
 //A standard interface for non-fungible tokens, also known as deeds.
 contract ERC721NFT_IPFS is ERC721, Ownable {
 
-    ERC721NFT_Security securityCheck = new ERC721NFT_Security();
+    // Contract containing security checks (require statements)
+    ERC721NFT_Compliance complianceCheck = new ERC721NFT_Compliance();
     
     // This is the mechanism used to keep store and increment tokenIds
     using Counters for Counters.Counter;
@@ -35,16 +36,16 @@ contract ERC721NFT_IPFS is ERC721, Ownable {
     
 
     // URI Meta
-    // string public uriPrefix = ""; // User submitted URI to NFT files
-    // string public uriSuffix = ".json"; // Ensures that the JSON format of the URI is always used
-    // string public hiddenMetadataUri; // NFT Metadata
+    string public uriPrefix = ""; // User submitted URI to NFT files
+    string public uriSuffix = ".json"; // Ensures that the JSON format of the URI is always used
+    string public hiddenMetadataUri; // NFT Metadata
 
     // NFT Economics
-    uint256 public tokenId;
-    uint256 public mintPrice = 0.01 ether; // Minimum minting cost
+    uint256 public tokenId; // Individual token ID
+    uint256 public mintPrice = 0.001 ether; // Minimum minting cost
     uint256 public maxSupply = 10000; // Max NFT token Supply
     uint256 public maxMintAmountPerTxn = 5; // Max mint about per transaction
-    mapping(address => uint256) public mintedWallets;
+    mapping(address => uint256) public mintedWallets; // Link NFT minters wallet address to token ID
 
     // Visibility
     bool public mintEnabled = false;
@@ -55,14 +56,16 @@ contract ERC721NFT_IPFS is ERC721, Ownable {
     // string private _baseURIextended;
 
     // "NFTWorld, "NFTWD"
-    constructor (string memory name, string memory symbol) ERC721 (name, symbol) {}
+    constructor (string memory name, string memory symbol) ERC721 (name, symbol) {
+        // setHiddenMeta
+    }
 
     // Getter function for current tokenId index value in the NFT supply
     function getTotalSupply() public view returns (uint256) {
         return tokenIds.current();
     }
 
-    function getAlltokens() public view returns (TokenMeta[] memory) {
+    function getAllTokens() public view returns (TokenMeta[] memory) {
         uint256 latestTokenId = tokenIds.current();
         uint256 counter = 0;
         TokenMeta[] memory results = new TokenMeta[](latestTokenId);
@@ -83,6 +86,7 @@ contract ERC721NFT_IPFS is ERC721, Ownable {
         mintEnabled = !mintEnabled;
     }
 
+    // Set the NFT token URI to the token ID
     function _setTokenURI(uint256 _tokenIds, string memory _tokenURIs) internal {
         tokenURIs[_tokenIds] = _tokenURIs;
     }
@@ -94,8 +98,10 @@ contract ERC721NFT_IPFS is ERC721, Ownable {
     }
 
     function mint(string memory _tokenURI) external payable returns(uint256) {
+
+        console.log("Token URI: %s", _tokenURI);
         // Check to make sure conditions found in ERC721NFT_Security pass
-        securityCheck.mintCheck(
+        complianceCheck.mintCheck(
             tokenIds.current(), 
             maxSupply, 
             mintEnabled, 
@@ -108,7 +114,7 @@ contract ERC721NFT_IPFS is ERC721, Ownable {
         mintedWallets[msg.sender]++;
         tokenIds.increment();
         tokenId = tokenIds.current(); // Used to save on gas
-
+        console.log("Current Supply:", tokenId);
         // Safely run mint transaction
         _safeMint(msg.sender, tokenId);
         // Set Token URI
@@ -119,31 +125,3 @@ contract ERC721NFT_IPFS is ERC721, Ownable {
 
 
 }
-
-// Moving comments
-
-    // function mintItem(address minter, string memory tokenURI) public onlyOwner returns (uint256) {
-    //     tokenIds.increment();
-    //     uint256 newItemId = tokenIds.current();
-    //     _mint(minter, newItemId);
-    //     _setTokenURI(newItemId, tokenURI);
-    //     return newItemId;
-    // }
-
-    // function setBaseURI(string memory baseURI_) external onlyOwner() {
-    //     _baseURIextended = baseURI_;
-    // }
-    
-    // function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
-    //     require(_exists(tokenId), "ERC721Metadata: URI set of nonexistent token");
-    //     _tokenURIs[tokenId] = _tokenURI;
-    // }
-
-
-// Mint Compliance - Make sure mint cost is greater than minimum and amount of mints is less than the transaction limit
-    // modifier mintCompliance(uint _mintAmount) {
-    //     require(_mintAmount > 0 && _mintAmount <= maxMintAmountPerTxn, "Invalid min amount.");
-    //     require(tokenIds.current() + _mintAmount <= maxSupply, "Max tokenIds exceeded.");
-    //     _;
-    // }
-

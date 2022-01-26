@@ -1,6 +1,9 @@
 const nft = async () => {
     const accounts = await hre.ethers.getSigners();
 
+    // NFT meta-data (JSON file) CID
+    const nftURI = "ipfs://Qmc6gahs1BdRbzmf9cSt4JdCT4vADU7VwUnaWyaQrH6r4y";
+
     const nftContractFactory = await hre.ethers.getContractFactory('ERC721NFT_IPFS');
     const nftContract = await nftContractFactory.deploy("Dogies", "DOG")
     await nftContract.deployed();
@@ -35,7 +38,7 @@ const nft = async () => {
 
         // Mint an NFT
         // .mint() requirements: (tokenURI, { unsigned transaction attributes })
-        const mintItemTxn = await deployedNFTContract.mint("", { value: ethers.utils.parseEther("0.01") });
+        const mintItemTxn = await deployedNFTContract.mint(nftURI, { value: ethers.utils.parseEther("0.01") });
         await mintItemTxn.wait();
     }
 
