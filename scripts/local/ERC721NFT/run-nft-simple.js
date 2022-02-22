@@ -14,8 +14,10 @@ const nft = async () => {
     console.log('Total NFT Supply: ' + totalSupplyCall);
 
     const toggleMintTxn = await nftContract.isMintEnabled();
-    console.log(toggleMintTxn);
+    // console.log(toggleMintTxn);
 
+    let events = await nftContract.queryFilter("MintEnabledLog")
+    console.log(events[0].args[events[0].args.length -1]);
 
     // Loop through first three accounts (excluding 0 since it deployed the script)
     for(var i = 1; i < 4; i++){
@@ -32,7 +34,7 @@ const nft = async () => {
         const mintItemTxn = await deployedNFTContract.mint({ value: ethers.utils.parseEther("0.01") });
         await mintItemTxn.wait();
         console.log(mintItemTxn);
-        console.log(mintItemTxn.value);
+        console.log("mintItemTxn.value: ", mintItemTxn.value);
     }
 
 };

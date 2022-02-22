@@ -25,6 +25,7 @@ contract ERC721NFT_Simple is ERC721, Ownable {
 
     // Visibility
     bool public mintEnabled = false;
+    event MintEnabledLog(address indexed sender, bool mintBool);
 
     // Pass the name and symbol of the NFT. Example is "NFTWorld, "NFTWD"
     constructor (string memory name, string memory symbol) ERC721 (name, symbol) {
@@ -34,8 +35,10 @@ contract ERC721NFT_Simple is ERC721, Ownable {
         return supply.current();
     }
 
-    function isMintEnabled() external onlyOwner {
+    function isMintEnabled() external onlyOwner returns (bool) {
         mintEnabled = !mintEnabled;
+        emit MintEnabledLog(msg.sender, mintEnabled);
+        return mintEnabled;
     }
 
     function mint() external payable {
