@@ -6,34 +6,76 @@ chai.use(solidity);
 const ERC721NFT_Simple  = require("../frontend/src/artifacts/contracts/ERC721NFT_Simple.sol/ERC721NFT_Simple.json");
 
 describe("ERC721NFT_Simple", async function () {
-    const [wallet, walletTo] = new MockProvider().getWallets();
+    const provider = new MockProvider();
+    const [wallet, otherWallet] = provider.getWallets();
+    console.log('wallet: ', wallet.address);
+    // const add1 = await provider.getBalance(wallet);
+    // console.log('wallet (balance): ', add1);
+    console.log('otherWallet: ',otherWallet.address);
+
 
     let ERC721NFTToken;
-    let token;
+    let contract;
+    let deployedNFTContract;
     let deployedToken;
     let tokenSupply;
     let mintEnabledLog;
+    let mintItemTxn;
 
     beforeEach(async () => {
-        token = await deployContract(wallet, ERC721NFT_Simple, ["Dogies", "DOG"]);
+        contract = await deployContract(wallet, ERC721NFT_Simple, ["Dogies", "DOG"]);
+        // console.log(await contract.getBalance());
+        deployedNFTContract = await hre.ethers.getContractAt("ERC721NFT_Simple", contract.address, otherWallet);
+        
     });
 
+    /*      Enables contract minting       */
     it('Enables contract minting', async () => {
-        statusToggle = await token.isMintEnabled();
+        
+        // Enable minting
+        statusToggle = await contract.isMintEnabled();
 
         // Tx Check
         expect(statusToggle).to.be.a('object');
 
         // Event Check
-        mintEnabledLog = await token.queryFilter("MintEnabledLog");
+        mintEnabledLog = await contract.queryFilter("MintEnabledLog");
         statusToggleLog = await mintEnabledLog[0].args[mintEnabledLog[0].args.length -1];
 
-        console.log("statusToggleLog : true = ", statusToggleLog);
         expect(statusToggleLog).to.be.a('boolean');
         expect(statusToggleLog).to.equal(true);
-        expect(statusToggle).to.emit(token, "MintEnabledLog").withArgs(wallet.address, true);
+        expect(statusToggle).to.emit(contract, "MintEnabledLog").withArgs(wallet.address, true);
 
     });
 
+    // /*      Mints NFT       */
+    // it('Mints an NFT', async () => {
+
+    // })
+
+    it('Tx matches the mint price', async () => {
+        // Enable minting
+        statusToggle = await contract.isMintEnabled();
+        
+        const mintItemTxn = expect(await contract.mint({ value: ethers.utils.parseEther("0.01") }));
+        // console.log(mintItemTxn)
+        
+        // mintItemTxn = expect(await deployedNFTContract.mint({ value: ethers.utils.parseEther("0.001") })).to.be.reverted;
+    })
+
+    it('Tx is greater than mint price and reverts', async () => {
+        // Enable minting
+        statusToggle = await contract.isMintEnabled();
+
+        // console.log(deployedNFTContract);
+
+        const estimation = await deployedNFTContract.estimateGas.mint({ value: ethers.utils.parseEther("0.01") });
+        console.log("Gas Estimate: ", ethers.utils.formatUnits(estimation, "ether"));
+        
+        const mintItemTxn = expect(await deployedNFTContract.mint({ value: ethers.utils.parseEther("0.1") })).to.be.reverted;
+        // console.log(mintItemTxn)
+        
+        // mintItemTxn = expect(await deployedNFTContract.mint({ value: ethers.utils.parseEther("0.001") })).to.be.reverted;
+    })
 
 })
