@@ -16,10 +16,12 @@ const erc1155 = async () => {
     let contractAdd = erc1155Contract.address;
     let ownerAdd = accounts[0].address;
     let receiverAdd = accounts[1].address;
+    let receiverAddTwo = accounts[2].address;
 
     let contractBalance = await hre.ethers.provider.getBalance(contractAdd);
     let ownerBalance = await hre.ethers.provider.getBalance(ownerAdd);
     let receiverBalance = await hre.ethers.provider.getBalance(receiverAdd);
+    let receiverBalanceTwo = await hre.ethers.provider.getBalance(receiverAddTwo);
 
     console.log('Contract Address:', contractAdd);
     console.log('Post-deploy - ETH Balance:', hre.ethers.utils.formatEther(contractBalance), '\n');
@@ -53,8 +55,23 @@ const erc1155 = async () => {
         "\n"
     );
 
-    console.log("Account Receiver - Token %d - Balance: %d", 1, await erc1155Contract.balanceOf(accounts[1].address, 1));
+    console.log("Account Receiver - Token %d - Balance: %d", 1, await erc1155Contract.balanceOf(receiverAdd, 1), "\n");
+    
+    console.log("=====      Batch Transaction - Transfer tokens to receiverAddTwo     ===== \n");
 
+    const batchSendTokens = await erc1155Contract.safeBatchTransferFrom(ownerAdd, receiverAddTwo, [0, 1], [100, 10], "0x00");
+
+    console.log(
+        "Post-Batch Transfer - Contract Token Supply: \n ID 0: %d \n ID 1: %d \n ID 2: %d \n ID 3: %d",
+        await erc1155Contract.balanceOf(accounts[0].address, 0),
+        await erc1155Contract.balanceOf(accounts[0].address, 1),
+        await erc1155Contract.balanceOf(accounts[0].address, 2),
+        await erc1155Contract.balanceOf(accounts[0].address, 3),
+        "\n"
+    );
+
+    console.log("Account Receiver - Token %d - Balance: %d", 0, await erc1155Contract.balanceOf(receiverAddTwo, 0));
+    console.log("Account Receiver - Token %d - Balance: %d", 1, await erc1155Contract.balanceOf(receiverAddTwo, 1), "\n");
 
 };
 
