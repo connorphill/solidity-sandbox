@@ -39,7 +39,7 @@ const erc1155 = async () => {
         "\n"
     );
     
-    console.log("=====      Transaction - Transfer tokens to receiverAdd     ===== \n");
+    console.log("=====      Tx #1 - Transaction - Transfer tokens to receiverAdd     ===== \n");
 
     // const deployedERC1155Contract = await hre.ethers.getContractAt("ERC1155Token", contractAdd, accounts[1]);
     
@@ -57,7 +57,7 @@ const erc1155 = async () => {
 
     console.log("Account Receiver - Token %d - Balance: %d", 1, await erc1155Contract.balanceOf(receiverAdd, 1), "\n");
     
-    console.log("=====      Batch Transaction - Transfer tokens to receiverAddTwo     ===== \n");
+    console.log("=====      Tx #2 - Batch Transaction - Transfer tokens to receiverAddTwo     ===== \n");
 
     const batchSendTokens = await erc1155Contract.safeBatchTransferFrom(ownerAdd, receiverAddTwo, [0, 1], [100, 10], "0x00");
 
@@ -70,8 +70,8 @@ const erc1155 = async () => {
         "\n"
     );
 
-    console.log("Account Receiver - Token %d - Balance: %d", 0, await erc1155Contract.balanceOf(receiverAddTwo, 0));
-    console.log("Account Receiver - Token %d - Balance: %d", 1, await erc1155Contract.balanceOf(receiverAddTwo, 1), "\n");
+    console.log("Account Receiver Two - Token %d - Balance: %d", 0, await erc1155Contract.balanceOf(receiverAddTwo, 0));
+    console.log("Account Receiver Two - Token %d - Balance: %d", 1, await erc1155Contract.balanceOf(receiverAddTwo, 1), "\n");
 
 };
 
