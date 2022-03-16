@@ -4,29 +4,61 @@ const erc1155 = async () => {
     const erc1155ContractFactory = await hre.ethers.getContractFactory('ERC1155Token');
     const erc1155Contract = await erc1155ContractFactory.deploy();
     await erc1155Contract.deployed();
-    console.log('Contract deployed to address:', erc1155Contract.address);
+    console.log('Contract deployed to address:', erc1155Contract.address, '\n');
+    // console.log(await erc1155Contract.balance)
 
-    let contractBalance = await hre.ethers.provider.getBalance(erc1155Contract.address);
+    // Mint an NFT
+    // const mintItemTxn = await erc1155Contract.mint(hre.ethers.utils.parseEther("0.01"));
+    // await mintItemTxn.wait();
+    // console.log(mintItemTxn);
+    // console.log("mintItemTxn.value: ", mintItemTxn.value);
 
-    console.log('Contract balance:', hre.ethers.utils.formatEther(contractBalance));
+    let contractAdd = erc1155Contract.address;
+    let ownerAdd = accounts[0].address;
+    let receiverAdd = accounts[1].address;
 
-    // Loop through first three accounts (excluding 0 since it deployed the script)
-    for(var i = 1; i < 4; i++){
-        console.log("Loop starting for: %s", accounts[i].address);
+    let contractBalance = await hre.ethers.provider.getBalance(contractAdd);
+    let ownerBalance = await hre.ethers.provider.getBalance(ownerAdd);
+    let receiverBalance = await hre.ethers.provider.getBalance(receiverAdd);
+
+    console.log('Contract Address:', contractAdd);
+    console.log('Post-deploy - ETH Balance:', hre.ethers.utils.formatEther(contractBalance), '\n');
+    console.log('Owners Address:', ownerAdd);
+    console.log('Post-deploy - ETH Balance:', hre.ethers.utils.formatEther(ownerBalance), '\n');
+    console.log('Contract Address:', receiverAdd);
+    console.log('Post-deploy - ETH Balance:', hre.ethers.utils.formatEther(receiverBalance), '\n');
     
-        // Get the deployed NFT contract and set signer to be address present in loop
-        const deployedErc1155Contract = await hre.ethers.getContractAt("ERC1155Token", erc1155Contract.address, accounts[i]);
+    console.log(
+        "Initial - Contract Token Supply: \n ID 0: %d \n ID 1: %d \n ID 2: %d \n ID 3: %d",
+        await erc1155Contract.balanceOf(accounts[0].address, 0),
+        await erc1155Contract.balanceOf(accounts[0].address, 1),
+        await erc1155Contract.balanceOf(accounts[0].address, 2),
+        await erc1155Contract.balanceOf(accounts[0].address, 3),
+        "\n"
+    );
+    
+    console.log("=====      Transaction - Transfer tokens to receiverAdd     ===== \n");
 
-        // Mint an NFT
-        const mintItemTxn = await deployedErc1155Contract.mint(1);
-        await mintItemTxn.wait();
-        console.log(mintItemTxn);
-        console.log("mintItemTxn.value: ", mintItemTxn.value);
-    }
+    // const deployedERC1155Contract = await hre.ethers.getContractAt("ERC1155Token", contractAdd, accounts[1]);
+    
+    // Use "0x00" if no data to be sent
+    const sendTokens = await erc1155Contract.safeTransferFrom(ownerAdd, receiverAdd, 1, 10, "0x00");
+
+    console.log(
+        "Post-Transfer - Contract Token Supply: \n ID 0: %d \n ID 1: %d \n ID 2: %d \n ID 3: %d",
+        await erc1155Contract.balanceOf(accounts[0].address, 0),
+        await erc1155Contract.balanceOf(accounts[0].address, 1),
+        await erc1155Contract.balanceOf(accounts[0].address, 2),
+        await erc1155Contract.balanceOf(accounts[0].address, 3),
+        "\n"
+    );
+
+    console.log("Account Receiver - Token %d - Balance: %d", 1, await erc1155Contract.balanceOf(accounts[1].address, 1));
+
 
 };
 
-const runContract = async () => {
+const runTxs = async () => {
     try {
         await erc1155();
         process.exit(0);
@@ -36,4 +68,4 @@ const runContract = async () => {
     }
 };
 
-runContract();
+runTxs();
