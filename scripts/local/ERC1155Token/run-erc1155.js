@@ -40,8 +40,6 @@ const erc1155 = async () => {
     );
     
     console.log("=====      Tx #1 - Transaction - Transfer tokens to receiverAdd     ===== \n");
-
-    // const deployedERC1155Contract = await hre.ethers.getContractAt("ERC1155Token", contractAdd, accounts[1]);
     
     // Use "0x00" if no data to be sent
     const sendTokens = await erc1155Contract.safeTransferFrom(ownerAdd, receiverAdd, 1, 10, "0x00");
@@ -55,7 +53,8 @@ const erc1155 = async () => {
         "\n"
     );
 
-    console.log("Account Receiver - Token %d - Balance: %d", 1, await erc1155Contract.balanceOf(receiverAdd, 1), "\n");
+    console.log("==     Account Receiver One     ==\n")
+    console.log("Token %d Balance: %d", 1, await erc1155Contract.balanceOf(receiverAdd, 1), "\n");
     
     console.log("=====      Tx #2 - Batch Transaction - Transfer tokens to receiverAddTwo     ===== \n");
 
@@ -63,15 +62,48 @@ const erc1155 = async () => {
 
     console.log(
         "Post-Batch Transfer - Contract Token Supply: \n ID 0: %d \n ID 1: %d \n ID 2: %d \n ID 3: %d",
-        await erc1155Contract.balanceOf(accounts[0].address, 0),
-        await erc1155Contract.balanceOf(accounts[0].address, 1),
-        await erc1155Contract.balanceOf(accounts[0].address, 2),
-        await erc1155Contract.balanceOf(accounts[0].address, 3),
+        await erc1155Contract.balanceOf(ownerAdd, 0),
+        await erc1155Contract.balanceOf(ownerAdd, 1),
+        await erc1155Contract.balanceOf(ownerAdd, 2),
+        await erc1155Contract.balanceOf(ownerAdd, 3),
         "\n"
     );
 
-    console.log("Account Receiver Two - Token %d - Balance: %d", 0, await erc1155Contract.balanceOf(receiverAddTwo, 0));
-    console.log("Account Receiver Two - Token %d - Balance: %d", 1, await erc1155Contract.balanceOf(receiverAddTwo, 1), "\n");
+    console.log("==     Account Receiver Two     ==\n")
+    console.log("Token %d - Balance: %d", 0, await erc1155Contract.balanceOf(receiverAddTwo, 0));
+    console.log("Token %d - Balance: %d", 1, await erc1155Contract.balanceOf(receiverAddTwo, 1), "\n");
+    
+    console.log("=====      Balance of Batch - Each token and address     ===== \n");
+
+    console.log(await erc1155Contract.balanceOfBatch([receiverAdd, receiverAddTwo], [0,0]))
+    const balanceTokenBatch = await erc1155Contract.balanceOfBatch([receiverAdd, receiverAddTwo], [0,0])
+    
+    function batchBalanceObjParse(arr){
+        for(var i = 0; i < arr.length; i++){
+            console.log(arr[i]);
+        }
+    }
+    
+    console.log(
+        "Post-Tx #2 - Address Wallet Tokens Stored: \n",
+        await erc1155Contract.balanceOfBatch(
+            [
+                receiverAdd, receiverAddTwo,
+                receiverAdd, receiverAddTwo,
+                receiverAdd, receiverAddTwo,
+                receiverAdd, receiverAddTwo
+            ], 
+            [
+                0,0,
+                1,1,
+                2,2,
+                3,3
+            ]
+        )
+    );
+    
+    console.log(typeof(await erc1155Contract.balanceOfBatch([receiverAdd, receiverAddTwo], [0,0])))
+
 
 };
 
