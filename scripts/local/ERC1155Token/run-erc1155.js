@@ -27,8 +27,10 @@ const erc1155 = async () => {
     console.log('Post-deploy - ETH Balance:', hre.ethers.utils.formatEther(contractBalance), '\n');
     console.log('Owners Address:', ownerAdd);
     console.log('Post-deploy - ETH Balance:', hre.ethers.utils.formatEther(ownerBalance), '\n');
-    console.log('Contract Address:', receiverAdd);
+    console.log('Receiver One Address:', receiverAdd);
     console.log('Post-deploy - ETH Balance:', hre.ethers.utils.formatEther(receiverBalance), '\n');
+    console.log('Receiver Two Address:', receiverAddTwo);
+    console.log('Post-deploy - ETH Balance:', hre.ethers.utils.formatEther(receiverBalanceTwo), '\n');
     
     console.log(
         "Initial - Contract Token Supply: \n ID 0: %d \n ID 1: %d \n ID 2: %d \n ID 3: %d",
@@ -78,12 +80,6 @@ const erc1155 = async () => {
     console.log(await erc1155Contract.balanceOfBatch([receiverAdd, receiverAddTwo], [0,0]))
     const balanceTokenBatch = await erc1155Contract.balanceOfBatch([receiverAdd, receiverAddTwo], [0,0])
     
-    function batchBalanceObjParse(arr){
-        for(var i = 0; i < arr.length; i++){
-            console.log(arr[i]);
-        }
-    }
-    
     console.log(
         "Post-Tx #2 - Address Wallet Tokens Stored: \n",
         await erc1155Contract.balanceOfBatch(
@@ -102,8 +98,33 @@ const erc1155 = async () => {
         )
     );
     
-    console.log(typeof(await erc1155Contract.balanceOfBatch([receiverAdd, receiverAddTwo], [0,0])))
+    console.log("=====      Batch Transfer - Receiver Two to Receiver One - Token 0 and 1     ===== \n");
 
+    
+
+    const deployedERC1155Contract = await hre.ethers.getContractAt("ERC1155Token", contractAdd, accounts[2]);
+
+    console.log("Receiver Two: ", await deployedERC1155Contract.balanceOfBatch([receiverAddTwo, receiverAddTwo], [0,1]));
+
+    const batchTransferTokens = await deployedERC1155Contract.safeBatchTransferFrom(receiverAddTwo, receiverAdd, [0,1], [50, 5], "0x00");
+
+    console.log(
+        "Post-Batch Transfer - Receiver One Token Supply: \n ID 0: %d \n ID 1: %d \n ID 2: %d \n ID 3: %d",
+        await erc1155Contract.balanceOf(receiverAdd, 0),
+        await erc1155Contract.balanceOf(receiverAdd, 1),
+        await erc1155Contract.balanceOf(receiverAdd, 2),
+        await erc1155Contract.balanceOf(receiverAdd, 3),
+        "\n"
+    );
+
+    console.log(
+        "Post-Batch Transfer - Receiver Two Token Supply: \n ID 0: %d \n ID 1: %d \n ID 2: %d \n ID 3: %d",
+        await erc1155Contract.balanceOf(receiverAddTwo, 0),
+        await erc1155Contract.balanceOf(receiverAddTwo, 1),
+        await erc1155Contract.balanceOf(receiverAddTwo, 2),
+        await erc1155Contract.balanceOf(receiverAddTwo, 3),
+        "\n"
+    );
 
 };
 
