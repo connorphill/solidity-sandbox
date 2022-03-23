@@ -3,9 +3,9 @@ let expect = chai.expect;
 const { ethers } = require("hardhat");
 const { deployContract, MockProvider, solidity } = require("ethereum-waffle");
 chai.use(solidity);
-const ERC721NFT_Simple  = require("../frontend/src/artifacts/contracts/ERC721NFT_Simple.sol/ERC721NFT_Simple.json");
+const ERC1155Token  = require("../frontend/src/artifacts/contracts/ERC1155/ERC1155Token.json");
 
-describe("ERC721NFT_Simple", async function () {
+describe("ERC1155Token", async function () {
     const provider = new MockProvider();
     const [wallet, otherWallet] = provider.getWallets();
     console.log('wallet: ', wallet.address);
@@ -23,9 +23,9 @@ describe("ERC721NFT_Simple", async function () {
     let mintItemTxn;
 
     beforeEach(async () => {
-        contract = await deployContract(wallet, ERC721NFT_Simple, ["Dogies", "DOG"]);
+        contract = await deployContract(wallet, ERC1155Token, ["Dogies", "DOG"]);
         // console.log(await contract.getBalance());
-        deployedNFTContract = await hre.ethers.getContractAt("ERC721NFT_Simple", contract.address, otherWallet);
+        deployedNFTContract = await hre.ethers.getContractAt("ERC1155Token", contract.address, otherWallet);
         
     });
 
