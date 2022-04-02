@@ -1,7 +1,7 @@
 const erc1155 = async () => {
     const accounts = await hre.ethers.getSigners();
 
-    const erc1155ContractFactory = await hre.ethers.getContractFactory('ERC1155_Token');
+    const erc1155ContractFactory = await hre.ethers.getContractFactory('ERC1155_IPFS_Token');
     const erc1155Contract = await erc1155ContractFactory.deploy();
     await erc1155Contract.deployed();
     console.log('Contract deployed to address:', erc1155Contract.address, '\n');
@@ -27,14 +27,26 @@ const erc1155 = async () => {
     
     console.log(
         "Initial - Contract Token Supply: \n ID 0: %d \n ID 1: %d \n ID 2: %d \n ID 3: %d",
-        await erc1155Contract.balanceOf(accounts[0].address, 0),
-        await erc1155Contract.balanceOf(accounts[0].address, 1),
-        await erc1155Contract.balanceOf(accounts[0].address, 2),
-        await erc1155Contract.balanceOf(accounts[0].address, 3),
+        await erc1155Contract.balanceOf(ownerAdd, 0),
+        await erc1155Contract.balanceOf(ownerAdd, 1),
+        await erc1155Contract.balanceOf(ownerAdd, 2),
+        await erc1155Contract.balanceOf(ownerAdd, 3),
         "\n"
     );
+
+    console.log("=====      Tx #1 - Mint - Mint Tokens     ===== \n");
+
+    let BARTERCOIN = 0;
+    let LOTS = 1;
+    let BUILDINGS = 2;
+    let VENUES = 3;
+
+    await erc1155Contract.mint(BARTERCOIN, 1e18.toString(), "ipfs://QmdacJ2nNJFJMWZ1KzVb1wu49WebxiSmafS45jfNGW9TXL/" + BARTERCOIN + ".json");
+    await erc1155Contract.mint(LOTS, 500, "ipfs://QmdacJ2nNJFJMWZ1KzVb1wu49WebxiSmafS45jfNGW9TXL/" + LOTS + ".json");
+    await erc1155Contract.mint(BUILDINGS, 100, "ipfs://QmdacJ2nNJFJMWZ1KzVb1wu49WebxiSmafS45jfNGW9TXL/" + BUILDINGS + ".json");
+    await erc1155Contract.mint(VENUES, 5, "ipfs://QmdacJ2nNJFJMWZ1KzVb1wu49WebxiSmafS45jfNGW9TXL/" + VENUES + ".json");
     
-    console.log("=====      Tx #1 - Transaction - Transfer tokens to receiverAdd     ===== \n");
+    console.log("=====      Tx #2 - Transaction - Transfer tokens to receiverAdd     ===== \n");
     
     // Use "0x00" if no data to be sent
     const sendTokens = await erc1155Contract.safeTransferFrom(ownerAdd, receiverAdd, 1, 10, "0x00");
@@ -121,6 +133,9 @@ const erc1155 = async () => {
 
     console.log("=====      URI - Read - ID #1     ===== \n");
     console.log(await erc1155Contract.uri(1));
+    console.log(await erc1155Contract.uri(2));
+    console.log(await erc1155Contract.uri(3));
+    console.log(await erc1155Contract.uri(4));
 
 };
 

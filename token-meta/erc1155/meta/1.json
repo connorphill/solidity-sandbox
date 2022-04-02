@@ -1,0 +1,19 @@
+{
+    "description": "Squiggles for ERC1155 sandbox example",
+    "image": "ipfs://QmeYDJnkNZS66QDvfcgGHDgsyJyjhUaoMs2XnWoYvQpRDe/sqiuggle-1.png",
+    "name": "Squiggle #1",
+    "attributes": [
+        {
+            "trait_type": "LOTS",
+            "value": 5
+        },
+        {
+            "trait_type": "BUILDINGS",
+            "value": 10
+        },
+        {
+            "trait_type": "VENUES",
+            "value": 1
+        }
+    ]
+}
