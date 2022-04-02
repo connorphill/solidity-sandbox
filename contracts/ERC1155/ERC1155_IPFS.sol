@@ -37,13 +37,8 @@ contract ERC1155_IPFS_Token is ERC1155, Ownable {
     // https://forum.openzeppelin.com/t/how-to-erc-1155-id-substitution-for-token-uri/3312/2
     // The URI is passed in the constructor when you create the NFT and remains unchangeable. Therefore, when you mint tokens for that NFT, the URI remains the same (which is different to ERC721, in which you pass the URI for every new NFT).
     constructor() ERC1155("") {
-        // _mint(msg.sender, tokenId, 1, "");
         name = "New City";
         symbol = "NCITY";
-        // _mint(msg.sender, BARTERCOIN, 10**18, "");
-        // _mint(msg.sender, LOTS, 500, "");
-        // _mint(msg.sender, BUILDINGS, 100, "");
-        // _mint(msg.sender, VENUES, 5, "");
     }
 
     // View URI for token by ID
